@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2"><i class="bi bi-easel me-2 text-primary"></i>Teacher Dashboard</h1>
+</div>
+
+<div class="row mb-4 g-3">
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 bg-primary text-white h-100">
+            <div class="card-body">
+                <h6 class="text-white-50 text-uppercase fw-bold mb-1">Active Courses</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ my_courses|length }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 bg-success text-white h-100">
+            <div class="card-body">
+                <h6 class="text-white-50 text-uppercase fw-bold mb-1">Total Students</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ total_students }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 bg-info text-white h-100">
+            <div class="card-body">
+                <h6 class="text-white-50 text-uppercase fw-bold mb-1">Assignments</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ total_assignments }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 bg-warning text-dark h-100">
+            <div class="card-body">
+                <h6 class="text-dark-50 text-uppercase fw-bold mb-1">To Grade</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ pending_submissions_count }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold"><i class="bi bi-people me-2"></i>Students & Enrolled Subjects</h5>
+                <a href="{% url 'assessments:gradebook_courses' %}" class="btn btn-sm btn-outline-primary">Gradebook</a>
+            </div>
+            <div class="card-body">
+                {% if teacher_enrollments %}
+                <div class="list-group list-group-flush">
+                    {% for enrollment in teacher_enrollments %}
+                    <div class="list-group-item px-0 py-3">
+                        <div class="d-flex flex-wrap justify-content-between gap-3">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <h6 class="mb-0 fw-bold">{{ enrollment.student.full_name }}</h6>
+                                    {% if enrollment.is_flagged_weak %}
+                                    <span class="badge bg-danger-subtle text-danger">Weak focus</span>
+                                    {% endif %}
+                                </div>
+                                <div class="small text-muted mb-1">
+                                    <i class="bi bi-person-badge me-1"></i>{{ enrollment.student.admission_number|default:enrollment.student.email }}
+                                </div>
+                                <div class="small">
+                                    <span class="fw-semibold">{{ enrollment.course.subject.code }} - {{ enrollment.course.subject.title }}</span>
+                                    <span class="text-muted ms-2"><i class="bi bi-calendar-range me-1"></i>{{ enrollment.course.semester.name }}</span>
+                                </div>
+                            </div>
+                            <div class="text-lg-end">
+                                {% if enrollment.overall_score is not None %}
+                                <span class="badge bg-primary-subtle text-primary mb-2">{{ enrollment.overall_score }}% {{ enrollment.final_grade }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary mb-2">No grade yet</span>
+                                {% endif %}
+                                <div>
+                                    <a href="{% url 'assessments:gradebook_student_detail' enrollment.course.id enrollment.student.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-clipboard-data me-1"></i>Grade
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% if not enrollment.is_flagged_weak %}
+                        <form method="post" action="{% url 'academics:flag_weak_student' enrollment.id %}" class="row g-2 mt-2">
+                            {% csrf_token %}
+                            <div class="col-sm">
+                                <input type="text" name="weak_reason" class="form-control form-control-sm" maxlength="255" placeholder="Weak reason / follow-up note">
+                            </div>
+                            <div class="col-sm-auto">
+                                <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>Add Weak
+                                </button>
+                            </div>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-person-lines-fill fs-1 mb-2 d-block"></i>
+                    No enrolled students in your courses yet.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold"><i class="bi bi-clipboard-check me-2"></i>Needs Grading</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if pending_submissions %}
+                <div class="list-group list-group-flush">
+                    {% for submission in pending_submissions %}
+                    <a href="{% url 'assessments:grade_submission' submission.id %}" class="list-group-item list-group-item-action px-4 py-3">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 fw-bold text-truncate">{{ submission.assignment.title }}</h6>
+                            <small class="text-danger">{{ submission.submitted_at|timesince }} ago</small>
+                        </div>
+                        <p class="mb-1 small">Student: {{ submission.student.full_name }}</p>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-check2-all fs-1 mb-2 d-block"></i>
+                    All caught up on grading!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h5 class="fw-bold text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Weak Students Focus</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if weak_students %}
+                <div class="list-group list-group-flush">
+                    {% for enrollment in weak_students %}
+                    <div class="list-group-item px-4 py-3">
+                        <div class="d-flex w-100 justify-content-between align-items-start gap-3">
+                            <div>
+                                <h6 class="mb-1 fw-bold">{{ enrollment.student.full_name }}</h6>
+                                <small class="text-muted">{{ enrollment.course.subject.code }} - {{ enrollment.course.subject.title }}</small>
+                                {% if enrollment.weak_reason %}
+                                <div class="small text-danger mt-1">{{ enrollment.weak_reason }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="text-end">
+                                {% if enrollment.overall_score is not None %}
+                                <span class="badge bg-danger fs-6">{{ enrollment.overall_score }}% ({{ enrollment.final_grade }})</span>
+                                {% else %}
+                                <span class="badge bg-danger fs-6">Manual</span>
+                                {% endif %}
+                                <div class="mt-2 d-flex justify-content-end gap-2">
+                                    <a href="{% url 'assessments:gradebook_student_detail' enrollment.course.id enrollment.student.id %}" class="btn btn-sm btn-outline-primary">Grade</a>
+                                    {% if enrollment.is_flagged_weak %}
+                                    <form method="post" action="{% url 'academics:unflag_weak_student' enrollment.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">Remove</button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-emoji-smile fs-1 mb-2 d-block"></i>
+                    No students are currently failing your courses.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-1">
+    <div class="col-md-3">
+        <a href="{% url 'assessments:manage_assignments' %}" class="btn btn-outline-primary w-100">
+            <i class="bi bi-journal-plus me-1"></i> Manage Assignments
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{% url 'assessments:manage_quizzes' %}" class="btn btn-outline-primary w-100">
+            <i class="bi bi-ui-checks-grid me-1"></i> Manage Quizzes
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{% url 'assessments:gradebook_courses' %}" class="btn btn-outline-primary w-100">
+            <i class="bi bi-clipboard-data me-1"></i> Gradebook
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{% url 'academics:material_overview' %}" class="btn btn-outline-primary w-100">
+            <i class="bi bi-folder2-open me-1"></i> Upload Materials
+        </a>
+    </div>
+</div>
+{% endblock %}

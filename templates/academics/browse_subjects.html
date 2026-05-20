@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Subjects{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-collection me-2 text-primary"></i>
+        {% if is_teacher_catalog %}My Teaching Subjects{% else %}Browse All Subjects{% endif %}
+    </h1>
+    {% if user.profile.is_student %}
+    <a href="{% url 'academics:my_curriculum' %}" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-journal-bookmark me-1"></i>My Curriculum
+    </a>
+    {% endif %}
+</div>
+
+{% if messages %}
+<div class="mb-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if subjects %}
+<div class="row g-4">
+    {% for subject in subjects %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100 {% if subject.id in enrolled_subject_ids %}border-start border-success border-3{% endif %}">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex align-items-start justify-content-between mb-2">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-pill fw-bold">{{ subject.code }}</span>
+                    <div>
+                        {% if subject.id in enrolled_subject_ids %}
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill me-1">
+                            <i class="bi bi-check-circle-fill me-1"></i>Enrolled
+                        </span>
+                        {% endif %}
+                        <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill">{{ subject.credits }} Cr</span>
+                    </div>
+                </div>
+                <h5 class="card-title fw-bold mb-1">{{ subject.title }}</h5>
+                <p class="text-muted small mb-2">{{ subject.department }}</p>
+                {% if subject.description %}
+                <p class="card-text text-muted small flex-grow-1">{{ subject.description|truncatewords:20 }}</p>
+                {% else %}
+                <p class="card-text text-muted small flex-grow-1 fst-italic">No description available.</p>
+                {% endif %}
+
+                <div class="mt-auto pt-3 border-top">
+                    {% if user.profile.is_student %}
+                        {% if subject.id in enrolled_subject_ids %}
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'academics:subject_detail' subject.id %}" class="btn btn-sm btn-outline-primary flex-fill">
+                                    <i class="bi bi-eye me-1"></i>Open Subject
+                                </a>
+                                <form method="post" action="{% url 'academics:remove_from_curriculum' subject.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this subject from your curriculum?')">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <form method="post" action="{% url 'academics:add_to_curriculum' subject.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-plus-lg me-1"></i>Add to My Curriculum
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% elif user.profile.is_teacher or user.profile.is_admin %}
+                        <a href="{% url 'academics:subject_detail' subject.id %}" class="btn btn-sm btn-outline-primary w-100">
+                            <i class="bi bi-gear me-1"></i>Manage Subject
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center text-muted py-5">
+    <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+    {% if is_teacher_catalog %}
+    <h5>No subjects assigned to you yet.</h5>
+    <p>Please contact an administrator to assign courses to your account.</p>
+    {% else %}
+    <h5>No subjects found in the database.</h5>
+    <p>Please contact an administrator to add subjects.</p>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

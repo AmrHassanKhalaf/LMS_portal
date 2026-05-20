@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0 rounded-lg">
+            <div class="card-header bg-success text-white text-center py-4 rounded-top">
+                <i class="bi bi-person-plus-fill fs-1"></i>
+                <h3 class="font-weight-light my-2">Create Account</h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" action="{% url 'accounts:register' %}" novalidate>
+                    {% csrf_token %}
+                    <!-- crispy renders the entire form nicely including error messages -->
+                    {{ form|crispy }}
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button class="btn btn-success btn-lg" type="submit">Register</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3 bg-light rounded-bottom">
+                <div class="small"><a href="{% url 'accounts:login' %}" class="text-decoration-none">Already have an account? Go to login</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

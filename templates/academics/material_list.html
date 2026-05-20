@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Course Materials - {{ course.subject.code }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2"><i class="bi bi-folder2-open me-2 text-primary"></i>Materials for {{ course.subject.title }}</h1>
+    {% if request.user.profile.is_teacher and course.professor == request.user %}
+    <a href="{% url 'academics:upload_course_material' course.id %}" class="btn btn-primary">
+        <i class="bi bi-cloud-upload me-1"></i> Upload Material
+    </a>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    {% for material in materials %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-body">
+                <h5 class="card-title fw-bold text-primary mb-3">
+                    {% if material.file_attachment %}
+                        <i class="bi bi-file-earmark-pdf me-2"></i>
+                    {% elif material.url_link %}
+                        <i class="bi bi-link-45deg me-2"></i>
+                    {% else %}
+                        <i class="bi bi-file-text me-2"></i>
+                    {% endif %}
+                    {{ material.title }}
+                </h5>
+                <p class="card-text text-muted small mb-4">{{ material.description|truncatewords:20 }}</p>
+                
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                    <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ material.created_at|date:"M d, Y" }}</small>
+                    <div>
+                        {% if material.file_attachment %}
+                        <a href="{{ material.file_attachment.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                            <i class="bi bi-download me-1"></i> Download
+                        </a>
+                        {% endif %}
+                        {% if material.url_link %}
+                        <a href="{{ material.url_link }}" class="btn btn-sm btn-outline-success" target="_blank">
+                            <i class="bi bi-box-arrow-up-right me-1"></i> Open Link
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">
+        <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+        <h4>No materials uploaded yet.</h4>
+        {% if request.user.profile.is_teacher %}
+        <p>Click the "Upload Material" button to add resources for your students.</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

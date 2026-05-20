@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Quiz{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center pt-5">
+    <div class="col-md-6">
+        <div class="card border-danger shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Deletion</h4>
+            </div>
+            <div class="card-body p-4 text-center">
+                <p class="fs-5">Are you sure you want to delete the quiz <strong>"{{ quiz.title }}"</strong>?</p>
+                <p class="text-danger small">This action cannot be undone. All questions, choices, and student attempts will be permanently deleted.</p>
+                
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <a href="{% url 'assessments:manage_quizzes' %}" class="btn btn-light me-2">Cancel</a>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i> Yes, Delete Quiz</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

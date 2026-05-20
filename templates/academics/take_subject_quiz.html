@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Take Quiz — {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <div>
+        <h1 class="h2"><i class="bi bi-pencil-square me-2 text-primary"></i>{{ quiz.title }}</h1>
+        <p class="text-muted mb-0">{{ quiz.subject.code }} · {{ quiz.time_limit_minutes }} min · {{ quiz.total_marks }} pts</p>
+    </div>
+    <a href="{% url 'academics:subject_detail' quiz.subject.id %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back
+    </a>
+</div>
+
+{% if messages %}
+<div class="mb-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if questions %}
+<form method="post" novalidate>
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-lg-8">
+            {% for question in questions %}
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h6 class="fw-bold mb-0">Q{{ forloop.counter }}. {{ question.text }}</h6>
+                        <span class="badge bg-primary rounded-pill">{{ question.points }} pts</span>
+                    </div>
+                    {% for choice in question.choices.all %}
+                    <div class="form-check mb-2 ps-0">
+                        <div class="border rounded p-2 d-flex align-items-center {% if forloop.first %}{% endif %}">
+                            <input class="form-check-input ms-2 me-3" type="radio" 
+                                   name="question_{{ question.id }}" 
+                                   id="choice_{{ choice.id }}" 
+                                   value="{{ choice.id }}">
+                            <label class="form-check-label w-100" for="choice_{{ choice.id }}">
+                                {{ choice.text }}
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="d-flex justify-content-end mb-5">
+                <button type="submit" class="btn btn-primary btn-lg px-5" onclick="return confirm('Are you sure you want to submit? You cannot retake this quiz.')">
+                    <i class="bi bi-check2-circle me-1"></i>Submit Quiz
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Info Sidebar -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 1rem;">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>Quiz Info</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><strong>Subject:</strong> {{ quiz.subject.code }}</li>
+                        <li class="mb-2"><strong>Questions:</strong> {{ questions|length }}</li>
+                        <li class="mb-2"><strong>Total Marks:</strong> {{ quiz.total_marks }}</li>
+                        <li class="mb-2"><strong>Passing Score:</strong> {{ quiz.passing_score }}</li>
+                        <li><strong>Time Limit:</strong> {{ quiz.time_limit_minutes }} minutes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% else %}
+<div class="text-center text-muted py-5">
+    <i class="bi bi-question-circle fs-1 d-block mb-3"></i>
+    <h5>This quiz has no questions yet.</h5>
+    <p>Please check back later.</p>
+</div>
+{% endif %}
+{% endblock %}

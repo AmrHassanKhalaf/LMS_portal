@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Submit Assignment{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center pt-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h3 class="fw-bold mb-1">{{ assignment.title }}</h3>
+                <p class="text-muted mb-0">{{ assignment.course.subject.code }} - due {{ assignment.due_date|date:"M d, Y H:i" }}</p>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted">{{ assignment.description }}</p>
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{% url 'academics:assignment_list' %}" class="btn btn-light me-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-upload me-1"></i> Submit Assignment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Quizzes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2"><i class="bi bi-ui-checks-grid me-2 text-primary"></i>Manage Quizzes</h1>
+    <a href="{% url 'assessments:create_quiz' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Create New Quiz
+    </a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Quiz Title</th>
+                        <th>Course</th>
+                        <th>Schedule</th>
+                        <th>Duration</th>
+                        <th>Marks (Pass)</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for quiz in quizzes %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-primary">{{ quiz.title }}</td>
+                        <td>{{ quiz.course.subject.code }}</td>
+                        <td>
+                            <small class="d-block text-success">Start: {{ quiz.start_time|date:"M d, H:i" }}</small>
+                            <small class="d-block text-danger">End: {{ quiz.end_time|date:"M d, H:i" }}</small>
+                        </td>
+                        <td>{{ quiz.time_limit_minutes }} mins</td>
+                        <td>{{ quiz.total_marks }} <small class="text-muted">({{ quiz.passing_score }})</small></td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group">
+                                <a href="{% url 'assessments:quiz_questions' quiz.id %}" class="btn btn-sm btn-outline-primary" title="Manage Questions">
+                                    <i class="bi bi-list-check"></i> Questions
+                                </a>
+                                <a href="{% url 'assessments:edit_quiz' quiz.id %}" class="btn btn-sm btn-outline-secondary" title="Edit Settings">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'assessments:delete_quiz' quiz.id %}" class="btn btn-sm btn-outline-danger" title="Delete Quiz">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                            <h4>No quizzes created yet.</h4>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

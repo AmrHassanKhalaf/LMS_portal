@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ subject.code }} — {{ subject.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <div>
+        <h1 class="h2"><i class="bi bi-book me-2 text-primary"></i>{{ subject.code }} — {{ subject.title }}</h1>
+        <p class="text-muted mb-0">{{ subject.department }} · {{ subject.credits }} Credits</p>
+    </div>
+    <a href="{% url 'academics:browse_subjects' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to Subjects
+    </a>
+</div>
+
+{% if messages %}
+<div class="mb-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if subject.description %}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <h6 class="fw-bold text-muted text-uppercase small mb-2">Description</h6>
+        <p class="mb-0">{{ subject.description }}</p>
+    </div>
+</div>
+{% endif %}
+
+<div class="row g-4">
+    <!-- Books / Materials Column -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold"><i class="bi bi-file-earmark-pdf me-2 text-danger"></i>Books & Materials</h5>
+                {% if user.profile.is_teacher or user.profile.is_admin %}
+                <a href="{% url 'academics:upload_subject_book' subject.id %}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-upload me-1"></i>Upload
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if books %}
+                <div class="list-group list-group-flush">
+                    {% for book in books %}
+                    <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 fw-bold">{{ book.title }}</h6>
+                            {% if book.description %}
+                            <small class="text-muted">{{ book.description|truncatewords:15 }}</small>
+                            {% endif %}
+                            <br><small class="text-muted"><i class="bi bi-clock me-1"></i>{{ book.uploaded_at|date:"M d, Y" }}</small>
+                        </div>
+                        <div class="d-flex gap-1">
+                            {% if book.file_attachment %}
+                            <a href="{{ book.file_attachment.url }}" class="btn btn-sm btn-outline-success" target="_blank">
+                                <i class="bi bi-download"></i>
+                            </a>
+                            {% endif %}
+                            {% if user.profile.is_teacher or user.profile.is_admin %}
+                            <a href="{% url 'academics:delete_subject_book' book.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this book?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-file-earmark-x fs-1 d-block mb-2"></i>
+                    No books uploaded yet.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quizzes Column -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold"><i class="bi bi-patch-question me-2 text-info"></i>Quizzes</h5>
+                {% if user.profile.is_teacher or user.profile.is_admin %}
+                <a href="{% url 'academics:create_subject_quiz' subject.id %}" class="btn btn-sm btn-info text-white">
+                    <i class="bi bi-plus-lg me-1"></i>Create Quiz
+                </a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if quizzes %}
+                <div class="list-group list-group-flush">
+                    {% for quiz in quizzes %}
+                    <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <h6 class="mb-0 fw-bold">{{ quiz.title }}</h6>
+                                {% if quiz.is_complete %}
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill" style="font-size: 0.7rem;">Ready</span>
+                                {% else %}
+                                    <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill" style="font-size: 0.7rem;">{{ quiz.questions_remaining }} Q left</span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-clock me-1"></i>{{ quiz.time_limit_minutes }} min ·
+                                Total: {{ quiz.total_marks }} pts ·
+                                Pass: {{ quiz.passing_score }} pts ·
+                                {{ quiz.num_questions }} Q
+                            </small>
+                        </div>
+                        <div class="d-flex gap-1">
+                            {% if user.profile.is_student %}
+                                {% if quiz.is_complete %}
+                                <a href="{% url 'academics:take_subject_quiz' quiz.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil-square me-1"></i>Take
+                                </a>
+                                {% else %}
+                                <button class="btn btn-sm btn-outline-secondary" disabled>
+                                    <i class="bi bi-hourglass-split me-1"></i>Not Ready
+                                </button>
+                                {% endif %}
+                            {% elif user.profile.is_teacher or user.profile.is_admin %}
+                            <a href="{% url 'academics:manage_subject_quiz' quiz.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-gear me-1"></i>Manage
+                            </a>
+                            <a href="{% url 'academics:subject_quiz_results' quiz.id %}" class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-bar-chart"></i>
+                            </a>
+                            <a href="{% url 'academics:delete_subject_quiz' quiz.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this quiz and all its data?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-patch-question fs-1 d-block mb-2"></i>
+                    No quizzes created yet.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

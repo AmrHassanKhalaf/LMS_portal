@@ -1,0 +1,88 @@
+<!--
+Base Template
+=============
+
+WHY THIS FILE EXISTS:
+    Implements the DRY (Don't Repeat Yourself) principle for frontend code.
+    This file contains the common HTML skeleton (head, navbar, footer) used
+    by EVERY page in the application.
+
+HOW IT CONNECTS:
+    Other templates use extends 'base.html' to inherit this structure,
+    and then fill in the content block with their specific HTML.
+
+DESIGN DECISIONS:
+    1. Loads Bootstrap 5 via CDN for styling and layout.
+    2. Loads custom CSS (style.css).
+    3. Includes a messages component to show alerts automatically.
+    4. Provides a block 'title' so each page can set its own browser tab name.
+-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A professional Student Management System">
+    
+    <!-- Title block can be overridden by child templates -->
+    <title>{% block title %}Student Management System{% endblock %} | SMS</title>
+    
+    <!-- Bootstrap 5 CSS (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    
+    <!-- Bootstrap Icons (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Global CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- Block for extra CSS in specific pages -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-light">
+
+    <!-- Include Navbar Component -->
+    {% include 'components/navbar.html' %}
+
+    <div class="container-fluid">
+        <div class="row">
+            
+            <!-- Main Content Area -->
+            <!-- If user is logged in, show sidebar and adjust main column width -->
+            {% if user.is_authenticated %}
+                <!-- Include Sidebar Component -->
+                {% include 'components/sidebar.html' %}
+                
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 main-content">
+            {% else %}
+                <!-- Full width if not logged in (e.g., login page) -->
+                <main class="col-12 px-md-4 py-4 main-content">
+            {% endif %}
+            
+                <!-- Include Messages Component to display flash messages (success, error) -->
+                {% include 'components/messages.html' %}
+                
+                <!-- Child templates will inject their content here -->
+                {% block content %}
+                {% endblock %}
+                
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle with Popper (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    
+    <!-- Custom Global JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    <!-- Block for extra JS in specific pages -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

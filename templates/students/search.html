@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2">Search Students</h1>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <form method="get" class="d-flex align-items-end gap-2">
+                    <div class="flex-grow-1">
+                        {{ form.query|as_crispy_field }}
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                        {% if query %}
+                            <a href="{% url 'students:search' %}" class="btn btn-outline-secondary ms-1">Clear</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if results is not None %}
+    <h4 class="mb-3">Results for "{{ query }}" <span class="badge bg-secondary ms-2">{{ results|length }} found</span></h4>
+    
+    {% if results %}
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Name</th>
+                                <th>Admission No.</th>
+                                <th>Grade</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in results %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        {% if student.image %}
+                                            <img src="{{ student.image.url }}" alt="{{ student.full_name }}" class="rounded-circle me-3 object-fit-cover" width="40" height="40">
+                                        {% else %}
+                                            <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px;">
+                                                <i class="bi bi-person-fill"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold">{{ student.full_name }}</h6>
+                                            <small class="text-muted">{{ student.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-secondary">{{ student.admission_number }}</span></td>
+                                <td><span class="badge bg-info text-dark">{{ student.get_academic_level_display }}</span></td>
+                                <td>{{ student.get_status_display }}</td>
+                                <td class="text-end pe-4">
+                                    <a href="{{ student.get_absolute_url }}" class="btn btn-sm btn-outline-primary">View Profile</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle-fill me-2"></i> No students found matching your search. Try different keywords.
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock %}

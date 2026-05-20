@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Quizzes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2"><i class="bi bi-patch-question me-2 text-primary"></i>Quizzes & Exams</h1>
+    {% if user.profile.is_teacher %}
+    <a href="{% url 'assessments:manage_quizzes' %}" class="btn btn-primary">
+        <i class="bi bi-ui-checks-grid me-1"></i> Manage Quizzes
+    </a>
+    {% endif %}
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+    {% for quiz in quizzes %}
+    <div class="col">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-2 py-1">
+                        <i class="bi bi-stopwatch me-1"></i>{{ quiz.time_limit_minutes }} min
+                    </span>
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-2 py-1">
+                        {{ quiz.questions.count }} Q{{ quiz.questions.count|pluralize }}
+                    </span>
+                </div>
+                <h5 class="card-title fw-bold mb-1">{{ quiz.title }}</h5>
+                <p class="text-muted small mb-3">{{ quiz.course.subject.code }} — {{ quiz.course.subject.title }}</p>
+                <div class="text-muted small">
+                    <div class="mb-1"><i class="bi bi-play-circle me-1"></i>Opens: {{ quiz.start_time|date:"M d, Y H:i" }}</div>
+                    <div><i class="bi bi-stop-circle me-1"></i>Closes: {{ quiz.end_time|date:"M d, Y H:i" }}</div>
+                </div>
+            </div>
+            {% if user.profile.is_student %}
+            <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                {% if quiz.id in attempted_quiz_ids %}
+                <button class="btn btn-sm btn-outline-success w-100" disabled>
+                    <i class="bi bi-check2-circle me-1"></i>Completed
+                </button>
+                {% else %}
+                <a href="{% url 'assessments:take_quiz' quiz.id %}" class="btn btn-sm btn-primary w-100">
+                    <i class="bi bi-play-circle me-1"></i>Take Quiz
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-patch-question fs-1 text-muted mb-3 d-block"></i>
+                <h5 class="text-muted">No quizzes available</h5>
+                <p class="text-muted">Quizzes will appear here once professors create them.</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

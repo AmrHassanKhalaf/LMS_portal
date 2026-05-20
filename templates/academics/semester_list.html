@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Semesters{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2"><i class="bi bi-calendar3 me-2 text-primary"></i>Semesters</h1>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for semester in semesters %}
+    <div class="col">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title fw-bold mb-1">{{ semester.name }}</h5>
+                        <span class="badge {% if semester.term == 'SUMMER' %}bg-warning text-dark{% elif semester.term == 'FALL' %}bg-danger{% elif semester.term == 'SPRING' %}bg-success{% else %}bg-info{% endif %} rounded-pill">
+                            {{ semester.get_term_display }}
+                        </span>
+                    </div>
+                    {% if semester.is_current %}
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2">
+                        <i class="bi bi-broadcast me-1"></i>Active
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="text-muted small">
+                    <div class="mb-1"><i class="bi bi-calendar-event me-2"></i>{{ semester.start_date|date:"M d, Y" }} — {{ semester.end_date|date:"M d, Y" }}</div>
+                    <div><i class="bi bi-book me-2"></i>{{ semester.courses.count }} course{{ semester.courses.count|pluralize }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-calendar-x fs-1 text-muted mb-3 d-block"></i>
+                <h5 class="text-muted">No semesters created yet</h5>
+                <p class="text-muted">Add semesters via the admin panel to get started.</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

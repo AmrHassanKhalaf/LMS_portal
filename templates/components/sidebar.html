@@ -1,0 +1,312 @@
+<!--
+Sidebar Component — Role-Based
+================================
+Included in base.html for authenticated users. Provides main navigation links.
+The sidebar content changes completely based on the user's role.
+-->
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-white sidebar collapse shadow-sm">
+    <div class="position-sticky pt-3 sidebar-sticky">
+        
+        <!-- ========================================== -->
+        <!-- ADMIN NAVIGATION                           -->
+        <!-- ========================================== -->
+        {% if user.profile.is_admin %}
+        <ul class="nav flex-column mb-auto">
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1 text-muted text-uppercase">
+                <span>Overview</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'students:dashboard' %}">
+                    <i class="bi bi-speedometer2 me-2"></i>
+                    Admin Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'analytics_dashboard' %}active{% endif %}" href="{% url 'academics:analytics_dashboard' %}">
+                    <i class="bi bi-graph-up-arrow me-2"></i> Analytics
+                </a>
+            </li>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                <span>People</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'student_list' %}active{% endif %}" href="{% url 'students:student_list' %}">
+                    <i class="bi bi-people me-2"></i> Students
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'student_create' %}active{% endif %}" href="{% url 'students:student_create' %}">
+                    <i class="bi bi-person-plus me-2"></i> Add Student
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'admin_teacher_panel' %}active{% endif %}" href="{% url 'accounts:admin_teacher_panel' %}">
+                    <i class="bi bi-person-video3 me-2"></i> Teachers
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'create_teacher' %}active{% endif %}" href="{% url 'accounts:create_teacher' %}">
+                    <i class="bi bi-person-video2 me-2"></i> Add Teacher
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'admin_user_list' %}active{% endif %}" href="{% url 'accounts:admin_user_list' %}">
+                    <i class="bi bi-person-gear me-2"></i> All Users
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'search' %}active{% endif %}" href="{% url 'students:search' %}">
+                    <i class="bi bi-search me-2"></i> Search
+                </a>
+            </li>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                <span>Academics</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'admin_academics_panel' %}active{% endif %}" href="{% url 'academics:admin_academics_panel' %}">
+                    <i class="bi bi-building-gear me-2"></i> Academics Panel
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'admin_course_add' %}active{% endif %}" href="{% url 'academics:admin_course_add' %}">
+                    <i class="bi bi-journal-plus me-2"></i> Add Course
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'admin_subject_add' %}active{% endif %}" href="{% url 'academics:admin_subject_add' %}">
+                    <i class="bi bi-collection me-2"></i> Add Subject
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'admin_semester_add' %}active{% endif %}" href="{% url 'academics:admin_semester_add' %}">
+                    <i class="bi bi-calendar2-plus me-2"></i> Add Semester
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'admin_timetable_add' %}active{% endif %}" href="{% url 'academics:admin_timetable_add' %}">
+                    <i class="bi bi-clock-history me-2"></i> Add Schedule
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'timetable_view' %}active{% endif %}" href="{% url 'academics:timetable_view' %}">
+                    <i class="bi bi-calendar-week me-2"></i> Master Schedule
+                </a>
+            </li>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                <span>Assessments</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/assessments/assignment/">
+                    <i class="bi bi-journal-text me-2"></i> Assignments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/assessments/quiz/">
+                    <i class="bi bi-patch-question me-2"></i> Quizzes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/assessments/submission/">
+                    <i class="bi bi-clipboard-check me-2"></i> Grades & Submissions
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/enrollments/courseenrollment/">
+                    <i class="bi bi-card-checklist me-2"></i> Enrollments
+                </a>
+            </li>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                <span>Content</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/academics/coursematerial/">
+                    <i class="bi bi-folder2-open me-2"></i> Materials
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/academics/subjectbook/">
+                    <i class="bi bi-book-half me-2"></i> Subject Books
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'announcement_list' %}active{% endif %}" href="{% url 'academics:announcement_list' %}">
+                    <i class="bi bi-megaphone me-2"></i> Announcements
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'notification_list' %}active{% endif %}" href="{% url 'academics:notification_list' %}">
+                    <i class="bi bi-bell me-2"></i> Notifications
+                </a>
+            </li>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                <span>System</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/">
+                    <i class="bi bi-gear-wide-connected me-2"></i> Backend Admin
+                </a>
+            </li>
+        </ul>
+        
+        <!-- ========================================== -->
+        <!-- TEACHER NAVIGATION                         -->
+        <!-- ========================================== -->
+        {% elif user.profile.is_teacher %}
+        <ul class="nav flex-column mb-auto">
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'teacher_dashboard' %}active{% endif %}" href="{% url 'academics:teacher_dashboard' %}">
+                    <i class="bi bi-easel me-2"></i>
+                    Teacher Dashboard
+                </a>
+            </li>
+            
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                <span>My Classes</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'timetable_view' %}active{% endif %}" href="{% url 'academics:timetable_view' %}">
+                    <i class="bi bi-clock me-2"></i> My Schedule
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'assignment_list' %}active{% endif %}" href="{% url 'academics:assignment_list' %}">
+                    <i class="bi bi-journal-text me-2"></i> Assignments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'manage_assignments' %}active{% endif %}" href="{% url 'assessments:manage_assignments' %}">
+                    <i class="bi bi-journal-plus me-2"></i> Manage Assignments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'quiz_list' %}active{% endif %}" href="{% url 'academics:quiz_list' %}">
+                    <i class="bi bi-patch-question me-2"></i> Quizzes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'material_overview' %}active{% endif %}" href="{% url 'academics:material_overview' %}">
+                    <i class="bi bi-folder2-open me-2"></i> Materials
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'manage_quizzes' %}active{% endif %}" href="{% url 'assessments:manage_quizzes' %}">
+                    <i class="bi bi-ui-checks-grid me-2"></i> Manage Quizzes
+                </a>
+            </li>
+            
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                <span>Subject Resources</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'browse_subjects' %}active{% endif %}" href="{% url 'academics:browse_subjects' %}">
+                    <i class="bi bi-collection me-2"></i> Browse Subjects
+                </a>
+            </li>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                <span>Students</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'student_list' %}active{% endif %}" href="{% url 'students:student_list' %}">
+                    <i class="bi bi-people me-2"></i> Student Directory
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'gradebook_courses' %}active{% endif %}" href="{% url 'assessments:gradebook_courses' %}">
+                    <i class="bi bi-clipboard-data me-2"></i> Gradebook
+                </a>
+            </li>
+        </ul>
+        
+        <!-- ========================================== -->
+        <!-- STUDENT NAVIGATION                         -->
+        <!-- ========================================== -->
+        {% else %}
+        <ul class="nav flex-column mb-auto">
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}" href="{% url 'students:student_dashboard' %}">
+                    <i class="bi bi-person-workspace me-2"></i>
+                    My Dashboard
+                </a>
+            </li>
+            
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                <span>My Academics</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'browse_subjects' %}active{% endif %}" href="{% url 'academics:browse_subjects' %}">
+                    <i class="bi bi-collection me-2"></i> Browse Subjects
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'my_curriculum' %}active{% endif %}" href="{% url 'academics:my_curriculum' %}">
+                    <i class="bi bi-journal-bookmark me-2"></i> My Curriculum
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'timetable_view' %}active{% endif %}" href="{% url 'academics:timetable_view' %}">
+                    <i class="bi bi-clock me-2"></i> My Schedule
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'assignment_list' %}active{% endif %}" href="{% url 'academics:assignment_list' %}">
+                    <i class="bi bi-journal-text me-2"></i> Assignments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'material_overview' %}active{% endif %}" href="{% url 'academics:material_overview' %}">
+                    <i class="bi bi-folder2-open me-2"></i> Materials
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'quiz_list' %}active{% endif %}" href="{% url 'academics:quiz_list' %}">
+                    <i class="bi bi-patch-question me-2"></i> Quizzes
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'my_transcript' %}active{% endif %}" href="{% url 'assessments:my_transcript' %}">
+                    <i class="bi bi-award me-2"></i> My Transcript
+                </a>
+            </li>
+        </ul>
+        {% endif %}
+
+        <!-- ========================================== -->
+        <!-- COMMON COMMUNICATION (All Roles)           -->
+        <!-- ========================================== -->
+        {% if not user.profile.is_admin %}
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                <span>Communication</span>
+            </h6>
+            <ul class="nav flex-column mb-auto">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'announcement_list' %}active{% endif %}" href="{% url 'academics:announcement_list' %}">
+                        <i class="bi bi-megaphone me-2"></i> Announcements
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'notification_list' %}active{% endif %}" href="{% url 'academics:notification_list' %}">
+                        <i class="bi bi-bell me-2"></i> Notifications
+                    </a>
+                </li>
+            </ul>
+        {% endif %}
+        
+        <hr>
+        
+        <!-- Bottom actions -->
+        <div class="px-3 pb-3">
+             <form method="post" action="{% url 'accounts:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger w-100 btn-sm">
+                    <i class="bi bi-box-arrow-left me-1"></i> Sign out
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>

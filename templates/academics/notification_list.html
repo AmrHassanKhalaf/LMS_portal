@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2"><i class="bi bi-bell me-2 text-primary"></i>Notifications</h1>
+</div>
+
+{% for notification in notifications %}
+<div class="card shadow-sm border-0 mb-2 {% if not notification.is_read %}border-start border-info border-3{% endif %}">
+    <div class="card-body py-3 d-flex align-items-center">
+        <div class="me-3">
+            {% if notification.is_read %}
+            <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                <i class="bi bi-bell"></i>
+            </div>
+            {% else %}
+            <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                <i class="bi bi-bell-fill"></i>
+            </div>
+            {% endif %}
+        </div>
+        <div class="flex-grow-1">
+            <p class="mb-0 {% if not notification.is_read %}fw-semibold{% endif %}">{{ notification.message }}</p>
+            <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ notification.created_at|timesince }} ago</small>
+        </div>
+        {% if notification.link %}
+        <a href="{{ notification.link }}" class="btn btn-sm btn-outline-primary ms-2">View</a>
+        {% endif %}
+    </div>
+</div>
+{% empty %}
+<div class="card shadow-sm border-0">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-bell-slash fs-1 text-muted mb-3 d-block"></i>
+        <h5 class="text-muted">No notifications</h5>
+        <p class="text-muted">You're all caught up!</p>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

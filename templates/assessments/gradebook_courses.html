@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Gradebook Courses{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2"><i class="bi bi-book me-2 text-primary"></i>My Gradebooks</h1>
+</div>
+
+<div class="row g-4">
+    {% for course in courses %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-body">
+                <h5 class="card-title fw-bold text-primary mb-3">
+                    {{ course.subject.code }} — {{ course.subject.title }}
+                </h5>
+                <p class="card-text text-muted small mb-4">
+                    <i class="bi bi-calendar-range me-2"></i>{{ course.semester.name }}
+                    <br>
+                    <i class="bi bi-people me-2"></i>{{ course.enrollments.count }} Enrollment Records
+                </p>
+                
+                <div class="d-flex justify-content-end mt-auto">
+                    <a href="{% url 'assessments:gradebook_students' course.id %}" class="btn btn-primary">
+                        Open Gradebook <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">
+        <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+        <h4>No courses assigned.</h4>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

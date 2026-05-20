@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <div>
+        <h1 class="h2 mb-1"><i class="bi bi-person-gear me-2 text-primary"></i>Edit User</h1>
+        <p class="text-muted mb-0">{{ managed_user.username }}</p>
+    </div>
+    <div class="btn-toolbar gap-2">
+        <a href="{% url 'accounts:admin_user_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Users
+        </a>
+        <a href="/admin/auth/user/{{ managed_user.id }}/change/" class="btn btn-outline-primary">
+            <i class="bi bi-gear me-1"></i>Backend
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">{{ form.username|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.email|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.first_name|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.last_name|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.role|as_crispy_field }}</div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <div class="form-check mb-3">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Active account</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'accounts:admin_user_list' %}" class="btn btn-light">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check2-circle me-1"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

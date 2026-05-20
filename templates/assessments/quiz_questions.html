@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Manage Questions - {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <div>
+        <h1 class="h2"><i class="bi bi-list-check me-2 text-primary"></i>Questions: {{ quiz.title }}</h1>
+        <p class="text-muted">{{ quiz.course.subject.code }} — {{ quiz.course.subject.title }}</p>
+    </div>
+    <a href="{% url 'assessments:manage_quizzes' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Quizzes
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- List of Existing Questions -->
+    <div class="col-lg-8">
+        {% for question in questions %}
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white pt-3 pb-2 d-flex justify-content-between">
+                <h6 class="fw-bold mb-0">Q{{ forloop.counter }}. {{ question.text }}</h6>
+                <span class="badge bg-secondary">{{ question.points }} Points</span>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush mb-3">
+                    {% for choice in question.choices.all %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ choice.text }}
+                        {% if choice.is_correct %}
+                            <span class="badge bg-success"><i class="bi bi-check-lg"></i> Correct</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+                <!-- Add Choice Form -->
+                <form method="post" action="{% url 'assessments:add_choice' question.id %}" class="row g-2 align-items-center">
+                    {% csrf_token %}
+                    <div class="col-sm-8">
+                        <input type="text" name="text" class="form-control form-control-sm" placeholder="New choice text" required>
+                    </div>
+                    <div class="col-sm-2 text-center">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_correct" id="correct_{{ question.id }}">
+                            <label class="form-check-label small text-muted" for="correct_{{ question.id }}">Correct</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 text-end">
+                        <button type="submit" class="btn btn-sm btn-outline-primary w-100">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info shadow-sm border-0">
+            <i class="bi bi-info-circle-fill me-2"></i> No questions added to this quiz yet. Use the form on the right to add the first question.
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Add New Question Form -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 sticky-top" style="top: 80px;">
+            <div class="card-header bg-primary text-white pt-3 pb-2">
+                <h5 class="fw-bold mb-0"><i class="bi bi-plus-circle me-2"></i>Add Question</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="add_question" value="1">
+                    {{ q_form|crispy }}
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary">Save Question</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2"><i class="bi bi-person-workspace me-2 text-primary"></i>My Dashboard</h1>
+</div>
+
+<div class="row mb-4 g-3">
+    <!-- GPA Card -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 bg-primary text-white h-100">
+            <div class="card-body">
+                <h6 class="text-white-50 text-uppercase fw-bold mb-1">Cumulative GPA</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ gpa|default:"0.0" }}</h2>
+                <div class="mt-3 small">
+                    <i class="bi bi-mortarboard me-1"></i> Total Credits: {{ total_credits }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Enrolled Courses Card -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 bg-success text-white h-100">
+            <div class="card-body">
+                <h6 class="text-white-50 text-uppercase fw-bold mb-1">Enrolled Courses</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ enrolled_courses|length }}</h2>
+                <div class="mt-3 small">
+                    <a href="{% url 'academics:timetable_view' %}" class="text-white text-decoration-none">View My Schedule <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Card -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 bg-info text-white h-100">
+            <div class="card-body">
+                <h6 class="text-white-50 text-uppercase fw-bold mb-1">Unread Notifications</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ notifications|length }}</h2>
+                <div class="mt-3 small">
+                    <a href="{% url 'academics:notification_list' %}" class="text-white text-decoration-none">View All <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Enrolled Courses List -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h5 class="fw-bold"><i class="bi bi-book me-2"></i>My Current Courses</h5>
+            </div>
+            <div class="card-body">
+                {% if enrolled_courses %}
+                <div class="list-group list-group-flush">
+                    {% for enrollment in enrolled_courses %}
+                    <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 fw-bold">{{ enrollment.course.subject.code }} — {{ enrollment.course.subject.title }}</h6>
+                            <small class="text-muted"><i class="bi bi-person me-1"></i>Prof. {{ enrollment.course.professor.last_name }}</small>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">{{ enrollment.course.subject.credits }} Credits</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-1 mb-2 d-block"></i>
+                    You are not currently enrolled in any courses.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Items Sidebar -->
+    <div class="col-lg-4">
+        
+        <!-- Open Quizzes -->
+        <div class="card shadow-sm border-0 mb-4 h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h5 class="fw-bold"><i class="bi bi-patch-question me-2"></i>Active Quizzes</h5>
+            </div>
+            <div class="card-body">
+                {% if open_quizzes %}
+                <div class="list-group list-group-flush">
+                    {% for quiz in open_quizzes %}
+                    <a href="{% url 'assessments:take_quiz' quiz.id %}" class="list-group-item list-group-item-action px-0 border-bottom">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 fw-bold text-truncate text-primary">{{ quiz.title }}</h6>
+                            <small class="text-danger fw-bold">{{ quiz.end_time|timeuntil }} left</small>
+                        </div>
+                        <p class="mb-1 small">{{ quiz.course.subject.code }} — {{ quiz.time_limit_minutes }} mins</p>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-3">
+                    <i class="bi bi-check-circle fs-2 mb-2 d-block"></i>
+                    No pending quizzes!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Upcoming Assignments -->
+        <div class="card shadow-sm border-0 mb-4 h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h5 class="fw-bold"><i class="bi bi-clock-history me-2"></i>Upcoming Assignments</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_assignments %}
+                <div class="list-group list-group-flush">
+                    {% for assignment in upcoming_assignments %}
+                    <div class="list-group-item px-0 border-bottom">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 fw-bold text-truncate" style="max-width: 70%;">{{ assignment.title }}</h6>
+                            <small class="text-danger fw-bold">{{ assignment.due_date|timeuntil }}</small>
+                        </div>
+                        <p class="mb-1 small">{{ assignment.course.subject.code }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-3">
+                    <i class="bi bi-check-circle fs-2 mb-2 d-block"></i>
+                    No upcoming assignments!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Materials -->
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h5 class="fw-bold"><i class="bi bi-folder2-open me-2"></i>Recent Materials</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_materials %}
+                <div class="list-group list-group-flush">
+                    {% for material in recent_materials %}
+                    <a href="{% url 'academics:course_material_list' material.course.id %}" class="list-group-item list-group-item-action px-0 border-bottom">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 fw-bold text-truncate" style="max-width: 80%;">
+                                {% if material.file_attachment %}<i class="bi bi-file-earmark-pdf me-1"></i>{% else %}<i class="bi bi-link-45deg me-1"></i>{% endif %}
+                                {{ material.title }}
+                            </h6>
+                        </div>
+                        <p class="mb-1 small">{{ material.course.subject.code }}</p>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-3">
+                    <p class="mb-0 small">No recent materials.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

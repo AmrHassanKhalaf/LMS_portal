@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Server Error{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-8 text-center">
+        <h1 class="display-1 fw-bold text-danger">500</h1>
+        <h2 class="mb-4">Internal Server Error</h2>
+        <p class="lead text-muted mb-5">Something went wrong on our end. Our team has been notified and is working on a fix.</p>
+        <a href="{% url 'students:dashboard' %}" class="btn btn-primary px-4 py-2">
+            <i class="bi bi-house-door me-2"></i>Return to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

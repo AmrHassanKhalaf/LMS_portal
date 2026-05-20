@@ -1,0 +1,50 @@
+# =============================================================
+# .gitignore — Student Management System
+# =============================================================
+# Keeps sensitive, generated, and OS-specific files
+# out of version control.
+# =============================================================
+
+# ---- Python ----
+*.py[cod]
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# ---- Virtual Environment ----
+venv/
+env/
+.venv/
+ENV/
+
+# ---- Django ----
+*.log
+db.sqlite3
+db.sqlite3-journal
+media/
+
+# ---- Environment Variables (CRITICAL — never commit secrets) ----
+.env
+.env.*
+
+# ---- IDE / Editor ----
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Static files collected for production ----
+staticfiles/
+static_root/

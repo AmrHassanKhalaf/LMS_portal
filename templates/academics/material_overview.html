@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Materials{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2"><i class="bi bi-folder2-open me-2 text-primary"></i>Materials</h1>
+</div>
+
+{% if user.profile.is_teacher %}
+<div class="row g-3 mb-4">
+    {% for course in courses %}
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="fw-bold mb-1">{{ course.subject.code }}</h6>
+                    <small class="text-muted">{{ course.subject.title }}</small>
+                </div>
+                <a href="{% url 'academics:upload_course_material' course.id %}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-cloud-upload me-1"></i>Upload
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-muted">No courses assigned yet.</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="row g-4">
+    {% for material in materials %}
+    <div class="col-md-6 col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-primary bg-opacity-10 text-primary">{{ material.course.subject.code }}</span>
+                    <small class="text-muted">{{ material.created_at|date:"M d, Y" }}</small>
+                </div>
+                <h5 class="fw-bold mb-2">{{ material.title }}</h5>
+                <p class="text-muted small flex-grow-1">{{ material.description|default:"No description."|truncatewords:22 }}</p>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'academics:course_material_list' material.course.id %}" class="btn btn-sm btn-outline-secondary">
+                        Open Course
+                    </a>
+                    {% if material.file_attachment %}
+                    <a href="{{ material.file_attachment.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-download me-1"></i>File
+                    </a>
+                    {% endif %}
+                    {% if material.url_link %}
+                    <a href="{{ material.url_link }}" target="_blank" class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>Link
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">
+        <i class="bi bi-folder-x fs-1 d-block mb-3"></i>
+        <h5>No materials available.</h5>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
